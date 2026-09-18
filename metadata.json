@@ -1,0 +1,1 @@
+{"name":"NTA JEE Main CBT Interface","description":"Official NTA JEE Main Computer-Based Test (CBT) mock exam interface with candidate timer, subject tabs, LaTeX question renderer, 75-question palette with 5 official status states, and telemetry tracking.","requestFramePermissions":[],"majorCapabilities":["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]}
