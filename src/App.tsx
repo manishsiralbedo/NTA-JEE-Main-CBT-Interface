@@ -102,6 +102,23 @@ export default function App() {
     }
     return {};
   });
+  const [studentInfo, setStudentInfo] = useState<{ name: string; rollNo: string }>(() => {
+    try {
+      const saved = localStorage.getItem('nta_student_info');
+      return saved ? JSON.parse(saved) : { name: '', rollNo: '' };
+    } catch {
+      return { name: '', rollNo: '' };
+    }
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('nta_student_info');
+      return Boolean(saved && JSON.parse(saved).name);
+    } catch {
+      return false;
+    }
+  });
 
   const [statuses, setStatuses] = useState<Record<number, QuestionStatus>>(() => {
     try {
@@ -398,6 +415,7 @@ export default function App() {
 
     const timeSpent = TOTAL_EXAM_SECONDS - remainingTimeSeconds;
 
+    const candidateName = studentInfo.name ? `${studentInfo.name} (${studentInfo.rollNo || 'N/A'})` : 'Candidate';
     // Send Real Data to Supabase
     saveSubmissionToSupabase(
       candidateName,
@@ -413,6 +431,8 @@ export default function App() {
   // Reset entire test
   const handleResetTest = () => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('nta_student_info');
+    setIsLoggedIn(false);
     setCurrentQuestionId(1);
     setAnswers({});
     setStatuses(initializeStatuses());
@@ -454,6 +474,67 @@ export default function App() {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4">
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 max-w-md w-full shadow-2xl">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold tracking-tight text-white">NTA JEE (Main) CBT Portal</h1>
+            <p className="text-sm text-slate-400 mt-1">Candidate Verification & Login</p>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.target as HTMLFormElement;
+              const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+              const rollInput = form.elements.namedItem('rollNo') as HTMLInputElement;
+              const name = nameInput?.value.trim();
+              const rollNo = rollInput?.value.trim() || 'N/A';
+              if (!name) return alert('Please enter candidate name.');
+              const info = { name, rollNo };
+              localStorage.setItem('nta_student_info', JSON.stringify(info));
+              setStudentInfo(info);
+              setIsLoggedIn(true);
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                Candidate Full Name *
+              </label>
+              <input
+                name="name"
+                type="text"
+                required
+                placeholder="e.g. Rahul Kumar"
+                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                Roll / Registration Number
+              </label>
+              <input
+                name="rollNo"
+                type="text"
+                placeholder="e.g. ALB-2026-101"
+                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-lg text-white transition-colors mt-2"
+            >
+              Start Examination →
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-100 font-sans text-slate-900">
       {/* If viewMode is ANALYTICS, show the Analytics & SLP Dashboard */}
