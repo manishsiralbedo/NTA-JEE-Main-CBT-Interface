@@ -32,36 +32,36 @@ export default function App() {
   };
 
   const saveSubmissionToSupabase = async (
-  studentName: string,
-  totalScore: number,
-  physicsScore: number,
-  chemScore: number,
-  mathScore: number,
-  timeSpent: number,
-  telemetryData: any
-) => {
-  try {
-    const { error } = await supabase.from('exam_submissions').insert([
-      {
-        student_name: studentName || 'Anonymous Student',
-        total_score: totalScore,
-        physics_score: physicsScore,
-        chemistry_score: chemScore,
-        math_score: mathScore,
-        time_spent_seconds: timeSpent,
-        telemetry: telemetryData,
-      },
-    ]);
+    studentName: string,
+    totalScore: number,
+    physicsScore: number,
+    chemScore: number,
+    mathScore: number,
+    timeSpent: number,
+    telemetryData: any
+  ) => {
+    try {
+      const { error } = await supabase.from('exam_submissions').insert([
+        {
+          student_name: studentName || 'Anonymous Student',
+          total_score: totalScore,
+          physics_score: physicsScore,
+          chemistry_score: chemScore,
+          math_score: mathScore,
+          time_spent_seconds: timeSpent,
+          telemetry: telemetryData,
+        },
+      ]);
 
-    if (error) {
-      console.error('Error saving submission to Supabase:', error.message);
-    } else {
-      console.log('Submission successfully recorded in Supabase!');
+      if (error) {
+        console.error('Error saving submission to Supabase:', error.message);
+      } else {
+        console.log('Submission successfully recorded in Supabase!');
+      }
+    } catch (err) {
+      console.error('Failed to submit:', err);
     }
-  } catch (err) {
-    console.error('Failed to submit:', err);
-  }
-};
+  };
 
   // Initialize Telemetry
   const initializeTelemetry = () => {
@@ -366,22 +366,48 @@ export default function App() {
     setIsSubmitConfirmModalOpen(true);
   };
 
-  // Final Confirmation: End Timer, Freeze Responses, Route to Analytics & SLP Dashboard
+  // Final Confirmation: End Timer, Freeze Responses, Calculate Score & Push to Supabase
   const handleConfirmFinalSubmit = () => {
     setIsSubmitConfirmModalOpen(false);
     setIsSummaryModalOpen(false);
     setIsFinalSubmitted(true);
     setIsTimerRunning(false);
     setViewMode('ANALYTICS');
+
+    // Prompt for Student Name (or roll number)
+    const candidateName = window.prompt("Enter Candidate Name / Roll Number for Results:", "Student") || "Student";
+
+    // Scoring Engine (+4 for correct, -1 for incorrect, 0 for unattempted)
+    let totalScore = 0;
+    let physicsScore = 0;
+    let chemistryScore = 0;
+    let mathScore = 0;
+
+    QUESTIONS_DATA.forEach((q) => {
+      const studentAns = answers[q.id];
+      if (studentAns !== undefined && studentAns !== '') {
+        const isCorrect = String(studentAns).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
+        const delta = isCorrect ? 4 : -1;
+
+        totalScore += delta;
+        if (q.subject === 'Physics') physicsScore += delta;
+        else if (q.subject === 'Chemistry') chemistryScore += delta;
+        else if (q.subject === 'Mathematics') mathScore += delta;
+      }
+    });
+
+    const timeSpent = TOTAL_EXAM_SECONDS - remainingTimeSeconds;
+
+    // Send Real Data to Supabase
     saveSubmissionToSupabase(
-  'Student Test',
-  0,
-  0,
-  0,
-  0,
-  TOTAL_EXAM_SECONDS - remainingTimeSeconds,
-  telemetry
-);
+      candidateName,
+      totalScore,
+      physicsScore,
+      chemistryScore,
+      mathScore,
+      timeSpent,
+      telemetry
+    );
   };
 
   // Reset entire test
