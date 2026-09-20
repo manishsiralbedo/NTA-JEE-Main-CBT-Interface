@@ -91,8 +91,12 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-xs font-semibold text-slate-500 uppercase">Candidate Name:</div>
-          <div className="text-sm font-bold text-slate-800 truncate">ABHINAV SHARMA</div>
-          <div className="text-[11px] text-slate-600">Roll: 250310084920</div>
+          <div className="text-sm font-bold text-slate-800 truncate">
+            {JSON.parse(localStorage.getItem('nta_student_info') || '{}').name || 'ABHINAV SHARMA'}
+          </div>
+          <div className="text-[11px] text-slate-500">
+            Roll: {JSON.parse(localStorage.getItem('nta_student_info') || '{}').rollNo || '250310084920'}
+          </div>
         </div>
       </div>
 
@@ -180,22 +184,20 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
           <button
             type="button"
             onClick={() => setViewFilter('ALL')}
-            className={`px-2 py-0.5 rounded font-semibold transition-colors ${
-              viewFilter === 'ALL'
-                ? 'bg-blue-700 text-white'
-                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-            }`}
+            className={`px-2 py-0.5 rounded font-semibold transition-colors ${viewFilter === 'ALL'
+              ? 'bg-blue-700 text-white'
+              : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+              }`}
           >
             All 75
           </button>
           <button
             type="button"
             onClick={() => setViewFilter('SUBJECT')}
-            className={`px-2 py-0.5 rounded font-semibold transition-colors ${
-              viewFilter === 'SUBJECT'
-                ? 'bg-blue-700 text-white'
-                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-            }`}
+            className={`px-2 py-0.5 rounded font-semibold transition-colors ${viewFilter === 'SUBJECT'
+              ? 'bg-blue-700 text-white'
+              : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+              }`}
           >
             {currentSubject.slice(0, 4)}
           </button>

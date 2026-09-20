@@ -35,10 +35,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => {});
+      document.documentElement.requestFullscreen?.().catch(() => { });
       setIsFullscreen(true);
     } else {
-      document.exitFullscreen?.().catch(() => {});
+      document.exitFullscreen?.().catch(() => { });
       setIsFullscreen(false);
     }
   };
@@ -105,11 +105,10 @@ export const Header: React.FC<HeaderProps> = ({
             <>
               <div
                 id="candidate-timer"
-                className={`flex items-center gap-2 px-3 py-1 rounded-md border text-sm sm:text-base font-mono font-bold shadow-inner ${
-                  isLowTime
-                    ? 'bg-rose-500/20 border-rose-400 text-rose-300 animate-pulse'
-                    : 'bg-slate-800/80 border-slate-600 text-amber-300'
-                }`}
+                className={`flex items-center gap-2 px-3 py-1 rounded-md border text-sm sm:text-base font-mono font-bold shadow-inner ${isLowTime
+                  ? 'bg-rose-500/20 border-rose-400 text-rose-300 animate-pulse'
+                  : 'bg-slate-800/80 border-slate-600 text-amber-300'
+                  }`}
               >
                 <Clock className="w-4 h-4 text-amber-400 shrink-0" />
                 <span className="text-xs font-sans text-slate-300 mr-1 hidden xs:inline">Time Left:</span>
@@ -138,8 +137,8 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3">
           <div className="hidden lg:flex items-center gap-2 text-right text-xs text-slate-200">
             <div>
-              <div className="font-semibold text-white">Abhinav Sharma</div>
-              <div className="text-slate-400 text-[11px]">Roll: 250310084920</div>
+              <div className="font-semibold text-white">{JSON.parse(localStorage.getItem('nta_student_info') || '{}').name || 'Candidate'}</div>
+              <div className="text-slate-400 text-[11px]">Roll: {JSON.parse(localStorage.getItem('nta_student_info') || '{}').rollNo || 'N/A'}</div>
             </div>
             <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-500 flex items-center justify-center text-slate-300">
               <User className="w-4 h-4" />
@@ -199,18 +198,16 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => onSelectSubject(sub)}
                 className={`
                   flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-t-md text-xs sm:text-sm font-semibold transition-all border-b-2
-                  ${
-                    isActive
-                      ? 'bg-white text-blue-800 border-blue-600 shadow-xs'
-                      : 'bg-slate-200/80 hover:bg-slate-200 text-slate-700 border-transparent'
+                  ${isActive
+                    ? 'bg-white text-blue-800 border-blue-600 shadow-xs'
+                    : 'bg-slate-200/80 hover:bg-slate-200 text-slate-700 border-transparent'
                   }
                 `}
               >
                 <span>{sub}</span>
                 <span
-                  className={`text-[11px] px-1.5 py-0.2 rounded-full ${
-                    isActive ? 'bg-blue-100 text-blue-700 font-bold' : 'bg-slate-300/70 text-slate-600'
-                  }`}
+                  className={`text-[11px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-blue-100 text-blue-700 font-bold' : 'bg-slate-300/70 text-slate-600'
+                    }`}
                 >
                   {count.answered}/{count.total}
                 </span>
