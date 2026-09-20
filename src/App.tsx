@@ -392,7 +392,6 @@ export default function App() {
     setViewMode('ANALYTICS');
 
     // Prompt for Student Name (or roll number)
-    const candidateName = window.prompt("Enter Candidate Name / Roll Number for Results:", "Student") || "Student";
 
     // Scoring Engine (+4 for correct, -1 for incorrect, 0 for unattempted)
     let totalScore = 0;
